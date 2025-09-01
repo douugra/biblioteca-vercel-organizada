@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Biblioteca</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <h1>📚 Biblioteca</h1>
+
+  <form id="form-livro">
+    <input type="number" id="id" placeholder="ID" required>
+    <input type="text" id="titulo" placeholder="Título" required>
+    <input type="text" id="autor" placeholder="Autor" required>
+    <input type="number" id="ano" placeholder="Ano" required>
+    <textarea id="descricao" placeholder="Descrição"></textarea>
+    <button type="submit">Adicionar Livro</button>
+  </form>
+
+  <h2>Total de Livros: <span id="contador">0</span></h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Autor</th>
+        <th>Ano</th>
+        <th>Descrição</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="lista-livros"></tbody>
+  </table>
+
+  <script src="/js/script.js"></script>
+</body>
+</html>
