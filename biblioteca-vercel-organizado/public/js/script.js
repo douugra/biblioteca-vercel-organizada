@@ -1,52 +1,107 @@
-const apiUrl = "/api/livros";
+const API_URL = "https://biblioteca-vercel-mibj.vercel.app/api/livros";
 
-async function carregarLivros() {
-  const res = await fetch(apiUrl);
-  const data = await res.json();
-  const tbody = document.getElementById("lista-livros");
-  tbody.innerHTML = "";
-  data.livros.forEach(livro => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${livro.id}</td>
-      <td>${livro.titulo}</td>
-      <td>${livro.autor}</td>
-      <td>${livro.ano}</td>
-      <td>${livro.descricao}</td>
-      <td>
-        <button onclick="editarLivro(${livro.id})">Editar</button>
-        <button onclick="deletarLivro(${livro.id})">Excluir</button>
-      </td>
+const form = document.getElementById("formLivro");
+const listaLivros = document.getElementById("listaLivros");
+const contador = document.getElementById("contador");
+
+let livros = [];
+
+// Função para renderizar os livros
+function renderizarLivros() {
+  listaLivros.innerHTML = "";
+  livros.forEach(l => {
+    const card = document.createElement("div");
+    card.className = "bg-white p-4 rounded-xl shadow-lg flex flex-col gap-2";
+    card.innerHTML = `
+      <h2 class="text-xl font-bold">${l.titulo}</h2>
+      <p class="text-sm text-gray-600">Autor: ${l.autor}</p>
+      <p class="text-sm text-gray-600">Ano: ${l.ano || '-'}</p>
+      <p class="text-gray-700">${l.descricao || ''}</p>
+      <div class="flex gap-2 mt-2">
+        <button class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600" onclick="editarLivro(${l.id})">Editar</button>
+        <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600" onclick="deletarLivro(${l.id})">Excluir</button>
+      </div>
     `;
-    tbody.appendChild(tr);
+    listaLivros.appendChild(card);
   });
-  document.getElementById("contador").textContent = data.total;
+  contador.textContent = livros.length;
 }
 
-document.getElementById("form-livro").addEventListener("submit", async (e) => {
+// Buscar livros da API
+async function fetchLivros() {
+  try {
+    const res = await fetch(API_URL);
+    livros = await res.json();
+    renderizarLivros();
+  } catch (err) {
+    console.error("Erro ao buscar livros:", err);
+  }
+}
+
+// Adicionar livro
+form.addEventListener("submit", async e => {
   e.preventDefault();
-  const livro = {
-    id: parseInt(document.getElementById("id").value),
+  const novoLivro = {
     titulo: document.getElementById("titulo").value,
     autor: document.getElementById("autor").value,
-    ano: parseInt(document.getElementById("ano").value),
+    ano: document.getElementById("ano").value,
     descricao: document.getElementById("descricao").value
   };
-  await fetch(apiUrl, { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(livro) });
-  carregarLivros();
-  e.target.reset();
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(novoLivro)
+    });
+    const criado = await res.json();
+    livros.push(criado);
+    renderizarLivros();
+    form.reset();
+  } catch (err) {
+    console.error("Erro ao adicionar livro:", err);
+  }
 });
 
-async function deletarLivro(id) { await fetch(`${apiUrl}/${id}`, { method: "DELETE" }); carregarLivros(); }
+// Editar livro
+window.editarLivro = async id => {
+  const livro = livros.find(l => l.id === id);
+  if (!livro) return;
 
-async function editarLivro(id) {
-  const titulo = prompt("Novo título:");
-  const autor = prompt("Novo autor:");
-  const ano = prompt("Novo ano:");
-  const descricao = prompt("Nova descrição:");
-  const livroAtualizado = { id, titulo, autor, ano: parseInt(ano), descricao };
-  await fetch(`${apiUrl}/${id}`, { method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify(livroAtualizado) });
-  carregarLivros();
-}
+  const novoTitulo = prompt("Novo título:", livro.titulo) || livro.titulo;
+  const novoAutor = prompt("Novo autor:", livro.autor) || livro.autor;
+  const novoAno = prompt("Novo ano:", livro.ano) || livro.ano;
+  const novaDescricao = prompt("Nova descrição:", livro.descricao) || livro.descricao;
 
-carregarLivros();
+  try {
+    const res = await fetch(`${API_URL}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        titulo: novoTitulo,
+        autor: novoAutor,
+        ano: novoAno,
+        descricao: novaDescricao
+      })
+    });
+    const atualizado = await res.json();
+    livros = livros.map(l => l.id === id ? atualizado : l);
+    renderizarLivros();
+  } catch (err) {
+    console.error("Erro ao editar livro:", err);
+  }
+};
+
+// Deletar livro
+window.deletarLivro = async id => {
+  try {
+    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    livros = livros.filter(l => l.id !== id);
+    renderizarLivros();
+  } catch (err) {
+    console.error("Erro ao deletar livro:", err);
+  }
+};
+
+// Inicialização
+fetchLivros();
