@@ -1,7 +1,82 @@
-body { font-family: Arial; background: #f9f9f9; padding: 20px; }
-h1 { text-align: center; }
-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-input, textarea, button { padding: 8px; font-size: 14px; }
-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-th { background: #333; color: white; }
+/* Tailwind base (se for compilado via PostCSS) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- Personalizações adicionais --- */
+
+/* Body */
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Fundo do site */
+body {
+  background: linear-gradient(to bottom right, #8b5cf6, #f472b6, #fbbf24); /* Roxo -> Rosa -> Laranja */
+}
+
+/* Formulário */
+form {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Inputs e textarea */
+input, textarea {
+  border: 1px solid #d1d5db; /* cinza claro */
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #8b5cf6; /* roxo vivo */
+  box-shadow: 0 0 0 3px rgba(139,92,246,0.3);
+}
+
+/* Botões */
+button {
+  font-weight: bold;
+  border-radius: 0.75rem;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+/* Botões específicos */
+button.bg-purple-600:hover { background-color: #7c3aed; }
+button.bg-red-500:hover { background-color: #dc2626; }
+button.bg-yellow-500:hover { background-color: #f59e0b; }
+
+/* Cards de livros */
+.card-livro {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-livro:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+}
+
+/* Contador */
+#contador {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  #listaLivros {
+    grid-template-columns: 1fr;
+  }
+}
