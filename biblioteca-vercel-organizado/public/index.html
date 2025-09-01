@@ -34,15 +34,11 @@
         <th class="p-2">Ações</th>
       </tr>
     </thead>
-    <tbody id="tabelaLivros" class="divide-y">
-      <!-- Linhas preenchidas pelo JS -->
-    </tbody>
+    <tbody id="tabelaLivros" class="divide-y"></tbody>
   </table>
 
   <script>
-    // Ajuste o link da API para sua Vercel
     const API = "https://biblioteca-vercel-organizada-ckzn.vercel.app/api/livros";
-
     const form = document.getElementById("livroForm");
     const tabela = document.getElementById("tabelaLivros");
     const contador = document.getElementById("contador");
@@ -50,7 +46,9 @@
 
     async function carregarLivros() {
       const res = await fetch(API);
-      const livros = await res.json();
+      const data = await res.json();
+      const livros = data.livros;
+
       tabela.innerHTML = "";
       livros.forEach(livro => {
         const tr = document.createElement("tr");
@@ -68,15 +66,17 @@
         `;
         tabela.appendChild(tr);
       });
+
       contador.textContent = `Total de livros: ${livros.length}`;
     }
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+
       const novoLivro = {
         titulo: document.getElementById("titulo").value,
         autor: document.getElementById("autor").value,
-        ano: document.getElementById("ano").value,
+        ano: parseInt(document.getElementById("ano").value) || 0,
         descricao: document.getElementById("descricao").value
       };
 
